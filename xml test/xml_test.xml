@@ -1,0 +1,177 @@
+<testmodule title="XML Debug" version="1.0">
+	<testgroup title="报文周期检测">
+		<testcase ident="tc001" title="报文周期检测——绝对时间">
+		  <conditions>
+			<cycletime_abs title="Cycle Time" min="90" max="110">
+			  <canmsg id="0x4DD"/>
+			</cycletime_abs>
+		  </conditions>
+		 <wait title="Wait" time="5s"/>
+		</testcase>
+		<testcase ident="tc001" title="报文周期检测——相对时间">
+		  <conditions>
+			<cycletime_rel title="Cycle Time" min="0.9" max="1.1">
+			  <canmsg id="0x4DD"/>
+			</cycletime_rel>
+		  </conditions>
+		 <wait title="Wait" time="5s"/>
+		</testcase>
+	</testgroup>
+	
+	<testgroup title="报文DLC检测">
+		<testcase ident="tc001" title="报文DLC检测">
+		    <conditions>
+				<dlc_ok title="DLC Monitoring">
+				  <canmsg id="0x4DD"/>
+				</dlc_ok>
+			 </conditions>
+		  <wait title="Wait" time="5s"/>
+		</testcase>
+	</testgroup>
+	<testgroup title="错误报文检测">
+		<testcase ident="tc001" title="错误报文检测">
+		    <conditions>
+				<error_frame_check  max="0" title="Error Frame" bus="CAN"  timeout = "5000"/>
+			 </conditions>
+		  <wait title="Wait" time="5s"/>
+		</testcase>
+		<testcase ident="tc001" title="指定错误报文数量检测">
+		    <conditions>
+				<error_frame_check min="2" max="2" title="Error Frame" bus="CAN" timeout = "5s"/>
+			 </conditions>
+		  <wait title="Wait" time="5s"/>
+		</testcase>
+	</testgroup>
+	
+	<testgroup title="报文之间的时间间隔">
+		<testcase ident="tc001" title="报文之间的时间间隔超过最大间隔">
+		    <conditions>
+				<distance title="Message Distance" min="0ms" max="51ms">
+				  <reference>
+					<canmsg id="0x3FC"/>
+				  </reference>
+				  <observed>
+					<canmsg id="0x4DD"/>
+				  </observed>
+				</distance>
+			 </conditions>
+		  <wait title="Wait" time="5s"/>
+		</testcase>
+		<testcase ident="tc001" title="报文之间的时间间隔小于最大间隔">
+		    <conditions>
+				<distance title="Message Distance" min="0ms" max="49ms">
+				  <reference>
+					<canmsg id="0x3FC"/>
+				  </reference>
+				  <observed>
+					<canmsg id="0x4DD"/>
+				  </observed>
+				</distance>
+			 </conditions>
+		  <wait title="Wait" time="5s"/>
+		</testcase>
+	</testgroup>
+	<testgroup title="未定义报文检测">
+		<testcase ident="tc001" title="未定义报文检测">
+		    <conditions>
+				<messages_known title="Unknown Message Received" bus="CAN"/>
+			 </conditions>
+		  <wait title="Wait" time="5s"/>
+		</testcase>
+	</testgroup>
+	
+	<testgroup title="节点是否处于激活状态">
+		<testcase ident="tc001" title="节点是否处于激活状态">
+		    <conditions>
+				<isalive title="Node Active" time="3s">
+				  <node name="IDCU"/>
+				</isalive>
+			 </conditions>
+		  <wait title="Wait" time="5s"/>
+		</testcase>
+	</testgroup>
+	<testgroup title="节点是否处于非激活状态">
+		<testcase ident="tc001" title="节点是否处于非激活状态">
+		    <conditions>
+				<goessleep  title="Node Active" time="3s">
+				  <node name="IDCU"/>
+				</goessleep >
+			 </conditions>
+		  <wait title="Wait" time="5s"/>
+		</testcase>
+	</testgroup>
+	<testgroup title="检测信号或者变量值是否被改变">
+		<testcase ident="tc001" title="检测信号或者变量值是否被改变">
+		    <conditions>
+				 <novaluechange title="Signal Value Constancy">
+				  <cansignal name="ECFail"/>
+				</novaluechange>
+			 </conditions>
+		  <wait title="Wait" time="5s"/>
+		</testcase>
+	</testgroup>
+	<testgroup title="检测指定报文出现了最多次数">
+		<testcase ident="tc001" title="检测指定报文出现了最多次数">
+		    <conditions>
+				<occurrence_count title="Absence of defined message" maxcount="2">
+				  <canmsg id="0x3af" bus="CAN">
+				  </canmsg>
+				</occurrence_count>
+			 </conditions>
+		  <wait title="Wait" time="5s"/>
+		</testcase>
+	 <testcase ident="tc001" title="检测指定报文出现了最多次数_指定内容">
+		    <conditions>
+				<occurrence_count title="Absence of defined message" maxcount="2">
+				  <canmsg id="0x3af" bus="CAN">
+					<byte pos="0">0x01</byte>
+				  </canmsg>
+				</occurrence_count>
+			 </conditions>
+		  <wait title="Wait" time="5s"/>
+		</testcase>
+	</testgroup>	
+	<testgroup title="检测case执行的最大允许时间">
+		<testcase ident="tc001" title="检测case执行的最大允许时间">
+		    <conditions>
+				 <withintime title="Timeout" max="6s"/>
+			 </conditions>
+		  <wait title="Wait" time="5s"/>
+		</testcase>
+	</testgroup>
+
+	<testgroup title="检测值之间的依赖关系">
+		<testcase ident="tc001" title="检测值之间的依赖关系">
+		  <conditions>
+			<valuedependency title="Values Invariant" mintime="5s" timeout="6s">
+			  <while joinconditon = "all">
+				<cansignal name="ECFail"><eq>1</eq></cansignal>
+				<cansignal name="EPBStatus"><eq>1</eq></cansignal>
+			  </while>
+			  <match joincondition = "any">
+				<envvar name="env_UDS_TestID">
+				  <range><from>1</from><to>4</to></range>
+				</envvar>
+				<cansignal name="EPBErrorStatus"><eq>1</eq></cansignal>
+			  </match>
+			</valuedependency>
+		  </conditions>
+		 <wait title="Wait" time="10s"/>
+		</testcase>		
+	</testgroup>
+	<testgroup title="检测值是否有效的">
+		<testcase ident="tc001" title="检测值是否有效的">
+		  <conditions>
+			<value_valid title="Signal Value">
+			  <cansignal name="EPBErrorStatus">
+				<range>
+				  <from>1</from>
+				  <to>3</to>
+				</range>
+			  </cansignal>
+			</value_valid>
+		  </conditions>
+		 <wait title="Wait" time="10s"/>
+		</testcase>		
+	</testgroup>	
+</testmodule>
