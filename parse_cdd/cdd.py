@@ -29,7 +29,7 @@ class mainClass(object):
                     temp = i.replace("/","_").replace("#","_").replace(": ","_").replace(":","_").replace("  ","_").replace(" - ","_").replace("-","_").replace(" ","_")
                     self.diagCan = self.diagCan + "\n" + "diagRequest    " + temp +"    req_" + temp + ";"
                 self.diagCan = "variables\n{\n%s\n}"%self.diagCan
-                print(self.diagCan)
+                print(self.diagCan.encode("utf-8"))
                 newFile = os.path.splitext(filename)[0] + '_DiagRequest_Variables.cin'
                 with open(newFile,'w') as f:
                     f.write(self.diagCan)
